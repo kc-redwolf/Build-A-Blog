@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+    <h2>View Post</h2>
+    <hr>
+
+    {% if blogpost %}
+        <h3>Post #{{id}}</h3>
+            <hr>
+                <div class="post">
+                    <div class="entry-title">{{entry.title}}</div>
+                <br>
+                    <p><pre class="entry-body">{{entry.body}}</pre></p>
+                </div>
+    {% else %}
+        <p>Post Not Found</p>
+    {% endif %}
+
+{% endblock %}
