@@ -2,6 +2,8 @@ import webapp2
 import os
 import jinja2
 import re
+import cgi
+
 
 from google.appengine.ext import db
 
@@ -26,7 +28,7 @@ class Blog(db.Model):
 
 class MainPage(Handler):
     def render_blog(self):
-        blogposts = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC limit 5")
+        blogposts = db.GqlQuery("SELECT * FROM Blog ORDER BY created LIMIT 5")
         self.render("blog.html", blogposts=blogposts)
 
     def get(self):
@@ -41,31 +43,31 @@ class NewPost(Handler):
         self.render_form()
 
     def post(self):
-        title = self.request.get("title")
-        blog = self.request.get("blog")
+        title = self.request.get("blog-title")
+        blog = self.request.get("blog-body")
 
         if title and blog:
-            post = Blog(
-                title=title,
-                body=body)
-            post.put()
-            id = post.key().id()
-            self.redirect("/blog/%s" % id)
+            blog_post = Blog(title=title, blog=blog)
+            blog_post.put()
+            id = blog_post.key().id()
+            self.redirect("/blog/" + str(id))
         else:
             error="Please enter a title and a blog post!"
-            self.render_form(title, blog, error)
+            self.render_form(title=title, blog=blog, error=error)
 
-class ViewPost(Handler):
-    def get(self, id):
+class ViewPostHandler(Handler):
+    def get(self, id, title="", blog=""):
         post = Blog.get_by_id(int(id))
+
         if post:
-            self.render("viewpost.html", post=post)
+            self.render("viewpost.html", title=title, blog=blog, post=post)
         else:
-            error = "there is no post with id %s" % id
+            error = "No Post Found For ID"
             self.render("viewpost.html", error=error)
 
 
 app = webapp2.WSGIApplication([
-    ('/blog', MainPage),
+    ('/', MainPage),
+    ('/blog', Blog),
     ('/blog/newpost', NewPost),
-    webapp2.Route('/blog/<id:\d+>', ViewPost)], debug=True)
+    (webapp2.Route('/blog/<id:\d+>', ViewPostHandler))], debug=True)

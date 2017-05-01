@@ -8,14 +8,14 @@
         <form method="post">
             <label>
                 <div>Title</div>
-                <input type="text" name="title" value="{{title}}">
+                <input type="text" name="blog-title" value="{{title}}">
             </label>
             <label>
                 <div>Body</div>
-                <textarea name="body">{{body}}</textarea>
+                <textarea name="blog-body">{{blog}}</textarea>
             </label>
-            <div class="error">{{ error }}</div>
-            <input type="submit">
+            <div class="error">{{error}}</div>
+            <input type="submit"/>
         </form>
 
 {% endblock %}
