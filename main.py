@@ -17,16 +17,17 @@
 import webapp2
 import os
 import jinja2
+import cgi
+import re
 
 from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),autoescape=True)
 
-
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
-        self.response.write(*a, **kw)
+        self.response.out.write(*a, **kw)
 
     def render_str(self, template, **params):
         t=jinja_env.get_template(template)
@@ -35,45 +36,39 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-class BlogPost(db.Model):
+class Blog(db.Model):
     title = db.StringProperty(required = True)
-    entry = db.TextProperty(required = True)
+    blog = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
 
-class MainPageHandler(Handler):
-    def get(self):
-        self.redirect("/blog")
-
-class BlogPage(Handler):
-    def render_blog(self, title="", entry="", error=""):
-        posts = db.GqlQuery("SELECT * FROM BlogPost ORDER BY created DESC LIMIT 5")
-        self.render('blog.html', title=title, entry=entry, error=error, posts=posts)
+class MainPage(Handler):
+    def render_blog(self):
+        blogposts = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC limit 5")
+        self.render("blog.html", blogposts=blogposts)
 
     def get(self):
-        page = self.request.get("page","1")
-        self.render_blog(page)
+        self.render_blog()
 
 
 class NewPost(Handler):
-
-    def render_form(self, title="", entry="", error=""):
-        self.render("newpost.html", title=title, entry=entry, error=error)
+    def render_form(self, title="", blog="", error=""):
+        self.render("newpost.html", title=title, blog=blog, error=error)
 
     def get(self):
         self.render_form()
 
     def post(self):
         title = self.request.get("title")
-        entry = self.request.get("entry")
+        blog = self.request.get("blog")
 
-        if title and entry:
-            b = BlogPost(title=title, entry=entry)
+        if title and blog:
+            b = Blog(title=title, blog=blog)
             b.put()
-            postroute = BlogPost.key(b).id()
-            self.redirect("/blog/" + str(postroute))
+
+            self.redirect("/blog/%s" %(b.key().id()))
         else:
-            error="Please enter a title and text!"
-            self.render_form(title=title, entry=entry, error=error)
+            error="Please enter a title and a blog post!"
+            self.render_form(title, blog, error)
 
 class ViewPost(Handler):
     def get(self, id):
@@ -84,8 +79,6 @@ class ViewPost(Handler):
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainPageHandler),
-    ('/blog', BlogPage),
+    ('/', MainPage),
     ('/newpost', NewPost),
-    webapp2.Route('/blog/<id:\d+>', ViewPost),
-], debug=True)
+    webapp2.Route('/blog/<ID:\d+>', ViewPost)], debug=True)

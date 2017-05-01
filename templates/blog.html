@@ -2,16 +2,15 @@
 
 {% block content %}
 
-    <h2>BLOG</h2>
-    <hr>
-    {% for entry in posts %}
-        <div class="post">
-            <div class="entry-title">
-                <a href="/blog/{{entry.key().id()}}">{{entry.title}}</a>
-            </div>
-            <p class="entry-body">{{entry.body}}</p>
-        </div>
-    <hr>
-    {% endfor %}
+<h2>Blog Posts</h2>
+<hr>
+{% for blog in blogposts %}
+    <div class="blog">
+        <div class="blog-title"><a href="/blog/{{blog.key().id()}}">{{blog.title}}</a></div>
+        <pre class="blog-body">{{blog.blog}}</pre>
+    </div>
+{% endfor %}
+
+<hr>
 
 {% endblock %}
