@@ -2,13 +2,7 @@
 
 {% block content %}
 
-
-    <h2>View Post</h2>
-        <hr>
-            <div class="blog">
-                <div class="blog-title">{{blog.title}}</div>
-                <pre class="blog-body">{{blog.blog}}</pre>
-            </div>
-        <hr>
+    <h2><a href="/blog/{{ blog.key().id() }}">{{ blog.title }}</a></h2>
+    <p>{{ blog.body }}</p>
 
 {% endblock %}

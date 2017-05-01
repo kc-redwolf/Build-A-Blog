@@ -5,19 +5,16 @@
     <h2>New Post</h2>
     <hr>
 
-        <form method="blog">
-            <label for="">
-                <div>title</div>
+        <form method="post">
+            <label>
+                <div>Title</div>
                 <input type="text" name="title" value="{{title}}">
             </label>
-            <br>
-            <label for="">
-                <div>blog</div>
-                <textarea name="blog">{{blog}}</textarea>
+            <label>
+                <div>Body</div>
+                <textarea name="body">{{body}}</textarea>
             </label>
-            <br>
-            <div class="error">{{error}}</div>
-            <br>
+            <div class="error">{{ error }}</div>
             <input type="submit">
         </form>
 

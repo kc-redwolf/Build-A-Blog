@@ -56,19 +56,21 @@
             }
 
             </style>
+        </head>
+        <body>
 
             <h1>Build-A-Blog</h1>
             <hr>
-            <div class="navbar" id="topnav">
-                    <a href="/">Home</a>  |  <a href="/newpost">New Post</a>
-            </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">home</a></li>
+                        <li><a href="/blog">all posts</a></li>
+                        <li><a href="/blog/newpost">new post</a></li>
+                    </ul>
+                </nav>
             <hr>
-        </head>
 
-
-        <body>
             {% block content %}
-                
             {% endblock %}
         </body>
     </html>

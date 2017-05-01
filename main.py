@@ -1,23 +1,6 @@
-#!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 import webapp2
 import os
 import jinja2
-import cgi
 import re
 
 from google.appengine.ext import db
@@ -62,23 +45,27 @@ class NewPost(Handler):
         blog = self.request.get("blog")
 
         if title and blog:
-            b = Blog(title=title, blog=blog)
-            b.put()
-
-            self.redirect("/blog/%s" %(b.key().id()))
+            post = Blog(
+                title=title,
+                body=body)
+            post.put()
+            id = post.key().id()
+            self.redirect("/blog/%s" % id)
         else:
             error="Please enter a title and a blog post!"
             self.render_form(title, blog, error)
 
 class ViewPost(Handler):
     def get(self, id):
-        id = int(id)
-        blogpost= BlogPost.get_by_id(id)
-
-        self.render("viewpost.html", blogpost=blogpost, id=id)
+        post = Blog.get_by_id(int(id))
+        if post:
+            self.render("viewpost.html", post=post)
+        else:
+            error = "there is no post with id %s" % id
+            self.render("viewpost.html", error=error)
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainPage),
-    ('/newpost', NewPost),
-    webapp2.Route('/blog/<ID:\d+>', ViewPost)], debug=True)
+    ('/blog', MainPage),
+    ('/blog/newpost', NewPost),
+    webapp2.Route('/blog/<id:\d+>', ViewPost)], debug=True)

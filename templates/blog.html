@@ -5,10 +5,8 @@
 <h2>Blog Posts</h2>
 <hr>
 {% for blog in blogposts %}
-    <div class="blog">
-        <div class="blog-title"><a href="/blog/{{blog.key().id()}}">{{blog.title}}</a></div>
-        <pre class="blog-body">{{blog.blog}}</pre>
-    </div>
+    <h2><a href="/blog/{{ blog.key().id() }}">{{ blog.title }}</a></h2>
+    <p>{{ blog.body }}</p>
 {% endfor %}
 
 <hr>
